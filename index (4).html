@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kick Bot v3.9</title> <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Renk değişkenleri */
+            --bg-color-light: linear-gradient(135deg, #f5f7fa, #eef2f7);
+            --text-color-light: #1a202c; /* Koyu Gri/Siyah */
+            --primary-color-light: #2ecc71;
+            --secondary-color-light: #27ae60;
+            --accent-color-light: #566573; /* Daha Koyu Gri */
+            --border-color-light: #dce4ec;
+            --shadow-color-light: rgba(149, 157, 165, 0.15);
+            --error-color-light: #e74c3c;
+            --warning-color-light: #f39c12;
+            --info-color-light: #3498db;
+            --log-bg-light: #ffffff;
+
+            --bg-color-dark: linear-gradient(135deg, #232a34, #1b2128);
+            --text-color-dark: #e1e8f0; /* Beyaza Yakın Açık Gri */
+            --primary-color-dark: #2ecc71;
+            --secondary-color-dark: #27ae60;
+            --accent-color-dark: #90a4ae; /* Açık Gri */
+            --border-color-dark: #3e4a5a;
+            --shadow-color-dark: rgba(0, 0, 0, 0.3);
+            --error-color-dark: #e74c3c;
+            --warning-color-dark: #f39c12;
+            --info-color-dark: #5dade2;
+            --log-bg-dark: #2c3642;
+
+            /* Aktif renkler */
+            --bg-color: var(--bg-color-light);
+            --text-color: var(--text-color-light);
+            --primary-color: var(--primary-color-light);
+            --secondary-color: var(--secondary-color-light);
+            --accent-color: var(--accent-color-light);
+            --border-color: var(--border-color-light);
+            --shadow-color: var(--shadow-color-light);
+            --error-color: var(--error-color-light);
+            --warning-color: var(--warning-color-light);
+            --info-color: var(--info-color-light);
+            --log-bg: var(--log-bg-light);
+            --primary-color-rgb: 46, 204, 113;
+            --text-color-dark-rgb: 225, 232, 240;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
+            margin: 0;
+            transition: background 0.4s ease, color 0.4s ease;
+            font-size: 15px;
+        }
+
+        body.dark-theme {
+            --bg-color: var(--bg-color-dark);
+            --text-color: var(--text-color-dark);
+            --primary-color: var(--primary-color-dark);
+            --secondary-color: var(--secondary-color-dark);
+            --accent-color: var(--accent-color-dark);
+            --border-color: var(--border-color-dark);
+            --shadow-color: var(--shadow-color-dark);
+            --error-color: var(--error-color-dark);
+            --warning-color: var(--warning-color-dark);
+            --info-color: var(--info-color-dark);
+            --log-bg: var(--log-bg-dark);
+            --primary-color-rgb: 46, 204, 113;
+        }
+
+        .container {
+            background-color: var(--log-bg);
+            padding: 30px 40px;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px var(--shadow-color);
+            width: 100%;
+            max-width: 1800px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: border-color 0.3s ease, background-color 0.3s ease;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            font-size: 2.4rem;
+            margin-bottom: 25px;
+            color: var(--primary-color);
+            text-shadow: 1px 1px 3px var(--shadow-color); /* Added text shadow */
+            font-weight: 600;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px 25px;
+            justify-content: center;
+            align-items: flex-end;
+            margin-bottom: 30px;
+            padding: 25px 30px;
+            background-color: rgba(0, 0, 0, 0.02);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+         body.dark-theme .controls {
+             background-color: rgba(255, 255, 255, 0.03);
+         }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+            position: relative;
+        }
+
+        label {
+            font-size: 0.8rem;
+            color: var(--accent-color);
+            font-weight: 500;
+            margin-left: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select,
+        button {
+            padding: 11px 16px;
+            font-size: 0.9rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.25s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+         body.dark-theme input, body.dark-theme select {
+             background-color: var(--log-bg-dark);
+             color: var(--text-color-dark);
+             border-color: var(--border-color-dark);
+         }
+         body.dark-theme input::placeholder {
+             color: rgba(var(--text-color-dark-rgb), 0.5);
+         }
+         body.dark-theme select { color: var(--text-color-dark); }
+
+        input[type="text"] { width: 170px; }
+        input[type="number"] { width: 90px; text-align: center; }
+        select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%238ca0b3'%3E%3Cpath d='M6 9l-4-4h8z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 30px;}
+        body.dark-theme select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2390a4ae'%3E%3Cpath d='M6 9l-4-4h8z'/%3E%3C/svg%3E"); }
+
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.25);
+        }
+
+        button {
+            background-color: var(--secondary-color);
+            color: #fff;
+            cursor: pointer;
+            border: none;
+            font-weight: 500;
+            box-shadow: 0 4px 10px -2px var(--shadow-color);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            justify-content: center;
+        }
+        button .icon { font-size: 1.1em; line-height: 1; }
+
+        button:hover:not(:disabled) {
+            background-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px -2px var(--shadow-color);
+        }
+        button:active:not(:disabled) {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px -1px var(--shadow-color);
+        }
+        button:disabled {
+            background-color: var(--accent-color);
+            cursor: not-allowed;
+            opacity: 0.7;
+            box-shadow: none;
+        }
+        #startButton { background-color: var(--primary-color); font-weight: 600; }
+        #startButton:hover:not(:disabled) { background-color: #36e07a; }
+        #stopButton { background-color: var(--error-color); }
+        #stopButton:hover:not(:disabled) { background-color: #c0392b; }
+        #transparencyButton.active {
+             border: 2px solid var(--primary-color);
+             box-shadow: 0 0 8px -1px var(--primary-color);
+        }
+        .utility-button {
+             background-color: var(--accent-color);
+             opacity: 0.8;
+             padding: 8px 12px;
+             font-size: 0.8rem;
+             text-transform: none;
+             letter-spacing: 0;
+             box-shadow: 0 2px 5px -1px var(--shadow-color);
+        }
+        .utility-button:hover:not(:disabled) {
+            background-color: var(--text-color);
+            color: var(--bg-color);
+             opacity: 1;
+        }
+
+
+        /* Performance & Resource Info */
+        .info-indicators {
+             display: flex;
+             flex-wrap: wrap;
+             justify-content: center;
+             gap: 15px;
+             margin-top: 10px;
+             margin-bottom: 20px;
+        }
+        .info-box {
+            font-size: 0.85rem;
+            padding: 5px 10px;
+            border-radius: 6px;
+            background-color: rgba(0,0,0,0.03);
+            border: 1px solid var(--border-color);
+            color: var(--accent-color);
+        }
+         body.dark-theme .info-box { background-color: rgba(255,255,255,0.04); color: var(--accent-color-dark); }
+        .info-box strong { color: var(--text-color); font-weight: 600; }
+        /* Apply primary color to active count and running status */
+        #counter, #statusText.running { color: var(--primary-color); }
+        body.dark-theme #counter, body.dark-theme #statusText.running { color: var(--primary-color-dark); }
+
+        #resourceEstimate.low { color: #27ae60; }
+        #resourceEstimate.medium { color: #f39c12; }
+        #resourceEstimate.high { color: #e67e22; }
+        #resourceEstimate.very-high { color: #e74c3c; }
+
+        .performance-warning {
+            display: none;
+            font-size: 0.8rem;
+            color: var(--warning-color);
+            margin-top: 5px;
+            text-align: left;
+            padding-left: 5px;
+            font-weight: 500;
+        }
+        .performance-warning.visible { display: block; }
+        .performance-warning .icon { margin-right: 4px; }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            max-width: 400px;
+            height: 10px;
+            background-color: var(--border-color);
+            border-radius: 5px;
+            margin: 10px auto 20px auto;
+            overflow: hidden;
+            display: none;
+        }
+        .progress-container.visible { display: block; }
+        #progressBar {
+            width: 0%;
+            height: 100%;
+            background-color: var(--primary-color);
+            border-radius: 5px;
+            transition: width 0.3s ease-out;
+        }
+
+        /* Log Area */
+        .log-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1000px;
+            margin: 20px auto 5px auto;
+            gap: 10px;
+        }
+         .log-controls label { flex-shrink: 0; }
+         .log-buttons { display: flex; gap: 10px; }
+
+        .log-area-wrapper {
+             max-width: 1000px;
+             margin: 0 auto 20px auto;
+             overflow: hidden;
+             /* Refined transition for smoother toggle */
+             transition: max-height 0.35s ease-in-out, padding 0.35s ease-in-out, border 0.35s ease-in-out, margin-bottom 0.35s ease-in-out;
+             max-height: 300px; /* Enough space for textarea + padding */
+             border: 1px solid var(--border-color);
+             border-radius: 8px;
+             padding: 1px; /* Add minimal padding to contain border */
+             box-sizing: border-box;
+        }
+         .log-area-wrapper.hidden {
+             max-height: 0;
+             border-color: transparent;
+             padding-top: 0;
+             padding-bottom: 0;
+             margin-bottom: 0;
+         }
+
+        .log-container { width: 100%; }
+        #logArea {
+            width: 100%;
+            height: 160px;
+            background-color: var(--log-bg);
+            border: none; /* Border moved to wrapper */
+            border-radius: 7px; /* Slightly less than wrapper */
+            padding: 12px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.85rem;
+            color: var(--text-color);
+            resize: vertical;
+            overflow-y: scroll;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); /* Softer inset shadow */
+            line-height: 1.4;
+            box-sizing: border-box;
+        }
+         body.dark-theme #logArea { color: var(--text-color-dark); box-shadow: inset 0 1px 3px rgba(0,0,0,0.2); }
+
+        .iframe-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            width: 100%;
+            margin-top: 25px;
+        }
+
+        iframe {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            box-shadow: 0 4px 12px -1px var(--shadow-color);
+            opacity: 1;
+            transition: opacity 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+            background-color: #1a1a1a;
+        }
+        iframe.transparent { opacity: 0.05; border: 1px solid transparent; box-shadow: none; }
+        iframe.reloading {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 12px 1px var(--primary-color);
+        }
+
+        .theme-toggle {
+            position: absolute; top: 18px; right: 18px;
+            background: none; border: 1px solid var(--accent-color);
+            color: var(--accent-color); font-size: 1.5rem; cursor: pointer;
+            border-radius: 50%; width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center;
+            padding: 0; box-shadow: none; transition: all 0.2s ease;
+        }
+        .theme-toggle:hover {
+            color: var(--primary-color); border-color: var(--primary-color);
+            transform: scale(1.1) rotate(10deg);
+        }
+
+        /* Footer removed */
+
+        .producer {
+            position: absolute; top: 22px; left: 18px; font-size: 0.9rem;
+            font-weight: 500; color: var(--accent-color); opacity: 0.9;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .producer a {
+            display: inline-block;
+            line-height: 0;
+            transition: transform 0.2s ease;
+        }
+        .producer a:hover {
+             transform: scale(1.15);
+        }
+        .producer svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--accent-color);
+            vertical-align: middle;
+        }
+        body.dark-theme .producer svg {
+             fill: var(--accent-color-dark);
+        }
+
+
+        /* Responsive Adjustments */
+         @media (max-width: 768px) {
+            body { font-size: 14px; }
+            .container { padding: 20px; }
+            h1 { font-size: 1.9rem; }
+            .controls { flex-direction: column; align-items: stretch; gap: 18px; padding: 20px; }
+            .control-group { align-items: stretch; width: 100%; max-width: 320px; margin: 0 auto; }
+             .control-group label { margin-left: 0; text-align: center; }
+             .control-group input, .control-group select, .control-group button { width: 100%; }
+             .performance-warning { text-align: center; padding-left: 0; }
+            .iframe-container { grid-template-columns: 1fr; gap: 12px; }
+            .producer {
+                 position: static;
+                 margin-top: 20px;
+                 text-align: center;
+                 justify-content: center;
+            }
+            .theme-toggle { position: static; margin: 20px auto; }
+            .log-controls { flex-direction: column; gap: 10px; align-items: stretch; margin-top: 15px; }
+            .log-controls .log-buttons { justify-content: center; }
+            .log-controls button { width: auto; max-width: none; }
+            #logArea { height: 120px; }
+            /* Footer removed, no need for footer padding adjustments */
+            .info-indicators { gap: 10px; }
+            .info-box { font-size: 0.8rem; }
+         }
+    </style>
+</head>
+<body>
+    <button id="themeToggle" class="theme-toggle" title="Temayı Değiştir">?</button>
+    <div class="producer">
+        <span>Yapımcı: Simmba</span>
+        <a href="https://www.instagram.com/Bedirim_" target="_blank" title="Instagram: Bedirim_">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                <path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9 26.3 26.2 58 34.4 93.9 36.2 37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"/>
+            </svg>
+        </a>
+    </div>
+
+    <div class="container">
+        <h1>Kick Bot v3.9</h1> <div class="controls">
+             <div class="control-group">
+                <label for="channelName">Kick Kanal Adı:</label>
+                <input type="text" id="channelName" placeholder="emirhansmp" />
+            </div>
+            <div class="control-group">
+                <label for="iframeCount">İzleyici Sayısı:</label>
+                <input type="number" id="iframeCount" placeholder="Adet" min="1" max="200" value="10" />
+                <div id="performanceWarning" class="performance-warning">
+                     <span class="icon">⚠️</span> Yüksek sayı performansı <strong>ciddi şekilde</strong> etkileyebilir!
+                </div>
+            </div>
+             <div class="control-group">
+                <label for="startDelay">Başlatma Gecikmesi (ms):</label>
+                <input type="number" id="startDelay" placeholder="ms" min="50" max="5000" value="250" />
+            </div>
+            <div class="control-group">
+                 <label for="reloadInterval">Yenileme:</label>
+                <select id="reloadInterval">
+                    <option value="0" selected>Asla</option>
+                    <option value="30000">30 Sn</option>
+                    <option value="60000">1 Dk</option>
+                    <option value="120000">2 Dk</option>
+                    <option value="300000">5 Dk</option>
+                    <option value="600000">10 Dk</option>
+                </select>
+            </div>
+             <div class="control-group">
+                 <label>&nbsp;</label> <button id="startButton" onclick="startIframes()"><span class="icon">▶️</span> Başlat</button>
+            </div>
+             <div class="control-group">
+                 <label>&nbsp;</label>
+                <button id="stopButton" onclick="stopIframes()" disabled><span class="icon">⏹️</span> Durdur</button>
+            </div>
+            <div class="control-group">
+                 <label>&nbsp;</label>
+                <button id="transparencyButton" onclick="toggleTransparency()"><span class="icon">👻</span> Saydamlık KAPALI</button>
+            </div>
+        </div>
+
+        <div class="info-indicators">
+             <div class="info-box">Durum: <strong id="statusText">Beklemede</strong></div>
+             <div class="info-box">Aktif: <strong id="counter">(0)</strong></div>
+             <div class="info-box">Kaynak Kullanımı: <strong id="resourceEstimate" class="low">Düşük</strong></div>
+        </div>
+         <div id="progressContainer" class="progress-container">
+             <div id="progressBar"></div>
+         </div>
+
+
+        <div class="log-controls">
+             <label for="logArea">İşlem Günlüğü:</label>
+             <div class="log-buttons">
+                 <button id="toggleLogButton" onclick="toggleLog()" class="utility-button"><span class="icon">↕️</span> Gizle/Göster</button>
+                 <button id="clearLogButton" onclick="clearLog()" class="utility-button"><span class="icon">🧹</span> Temizle</button>
+                 <button id="resetPasswordLockButton" onclick="resetPasswordLock()" class="utility-button"><span class="icon">🔑</span> Şifre Kilidini Sıfırla</button>
+             </div>
+        </div>
+        <div id="logAreaWrapper" class="log-area-wrapper"> <div class="log-container">
+                 <textarea id="logArea" readonly></textarea>
+            </div>
+        </div>
+
+        <div id="iframeContainer" class="iframe-container"></div>
+    </div>
+
+    <script>
+        // --- DOM Elements ---
+        const channelNameInput = document.getElementById("channelName");
+        const iframeCountInput = document.getElementById("iframeCount");
+        const startDelayInput = document.getElementById("startDelay");
+        const reloadIntervalSelect = document.getElementById("reloadInterval");
+        const startButton = document.getElementById("startButton");
+        const stopButton = document.getElementById("stopButton");
+        const transparencyButton = document.getElementById("transparencyButton");
+        const iframeContainer = document.getElementById("iframeContainer");
+        const counterElement = document.getElementById("counter");
+        const statusText = document.getElementById("statusText");
+        const resourceEstimateElement = document.getElementById("resourceEstimate");
+        const progressContainer = document.getElementById("progressContainer");
+        const progressBar = document.getElementById("progressBar");
+        const themeToggleButton = document.getElementById("themeToggle");
+        const logArea = document.getElementById("logArea");
+        const logAreaWrapper = document.getElementById("logAreaWrapper");
+        const toggleLogButton = document.getElementById("toggleLogButton");
+        const performanceWarning = document.getElementById("performanceWarning");
+        const clearLogButton = document.getElementById("clearLogButton");
+        const resetPasswordLockButton = document.getElementById("resetPasswordLockButton");
+        const body = document.body;
+
+        // --- State Variables ---
+        let isRunning = false;
+        let targetCount = 0;
+        let currentCount = 0;
+        let createdCount = 0;
+        let isTransparent = false;
+        let reloadInterval = 0;
+        let startDelay = 250;
+        let iframeIntervals = [];
+        let currentChannel = "";
+        const correctPassword = "bedo12";
+        let stopRequested = false;
+        const passwordStorageKey = 'kickPasswordEntered_v3.9'; // Updated key
+        const logVisibilityKey = 'kickLogVisible_v3.9'; // Updated key
+        const settingsStoragePrefix = 'kickBot_v3.9_'; // Updated prefix
+
+        // --- Utility Functions ---
+        function logMessage(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            let prefix = `[${timestamp}] INFO: `;
+            if (type === 'error') prefix = `[${timestamp}] HATA: `;
+            if (type === 'warn') prefix = `[${timestamp}] UYARI: `;
+
+            logArea.value += `${prefix}${message}\n`;
+            // Only scroll if the log is visible
+            if (logAreaWrapper && !logAreaWrapper.classList.contains('hidden')) {
+                 logArea.scrollTop = logArea.scrollHeight;
+            }
+        }
+
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+         function updateRootRgbColors() {
+             const style = getComputedStyle(document.documentElement);
+             const primaryColor = style.getPropertyValue('--primary-color').trim();
+             const textColorDark = style.getPropertyValue('--text-color-dark').trim();
+
+             if (primaryColor.startsWith('#')) {
+                 try {
+                    const r = parseInt(primaryColor.substring(1, 3), 16);
+                    const g = parseInt(primaryColor.substring(3, 5), 16);
+                    const b = parseInt(primaryColor.substring(5, 7), 16);
+                    if (!isNaN(r) && !isNaN(g) && !isNaN(b)) {
+                         document.documentElement.style.setProperty('--primary-color-rgb', `${r}, ${g}, ${b}`);
+                    }
+                 } catch (e) { console.error("RGB renk ayrıştırılamadı (primary):", e); }
+             }
+             // Calculate RGB for dark text color (for placeholder opacity)
+             if (textColorDark.startsWith('#')) {
+                 try {
+                     const r = parseInt(textColorDark.substring(1, 3), 16);
+                     const g = parseInt(textColorDark.substring(3, 5), 16);
+                     const b = parseInt(textColorDark.substring(5, 7), 16);
+                     if (!isNaN(r) && !isNaN(g) && !isNaN(b)) {
+                          document.documentElement.style.setProperty('--text-color-dark-rgb', `${r}, ${g}, ${b}`);
+                     }
+                 } catch (e) { console.error("RGB renk ayrıştırılamadı (text-dark):", e); }
+             } else {
+                  // Fallback if color is not hex (e.g., white)
+                  document.documentElement.style.setProperty('--text-color-dark-rgb', `225, 232, 240`);
+             }
+         }
+
+        // --- Settings Load/Save ---
+        function saveSettings() {
+            try {
+                localStorage.setItem(settingsStoragePrefix + 'channelName', channelNameInput.value);
+                localStorage.setItem(settingsStoragePrefix + 'iframeCount', iframeCountInput.value);
+                localStorage.setItem(settingsStoragePrefix + 'reloadInterval', reloadIntervalSelect.value);
+                localStorage.setItem(settingsStoragePrefix + 'startDelay', startDelayInput.value);
+                localStorage.setItem(settingsStoragePrefix + 'theme', body.classList.contains('dark-theme') ? 'dark' : 'light');
+                localStorage.setItem(settingsStoragePrefix + 'transparency', isTransparent);
+                localStorage.setItem(settingsStoragePrefix + 'logVisible', !logAreaWrapper.classList.contains('hidden'));
+            } catch (e) {
+                console.error("Ayarlar kaydedilemedi (localStorage dolu olabilir):", e);
+                logMessage("Tarayıcı hafızası dolu, ayarlar kaydedilemedi.", 'error');
+            }
+        }
+
+        function loadSettings() {
+            const savedChannel = localStorage.getItem(settingsStoragePrefix + 'channelName');
+            if (savedChannel) { channelNameInput.value = savedChannel; }
+            else { channelNameInput.placeholder = "emirhansmp"; }
+
+            iframeCountInput.value = localStorage.getItem(settingsStoragePrefix + 'iframeCount') || '10';
+            reloadIntervalSelect.value = localStorage.getItem(settingsStoragePrefix + 'reloadInterval') || '0'; // Default to '0' (Asla)
+            startDelayInput.value = localStorage.getItem(settingsStoragePrefix + 'startDelay') || '250';
+            isTransparent = localStorage.getItem(settingsStoragePrefix + 'transparency') === 'true';
+            const savedTheme = localStorage.getItem(settingsStoragePrefix + 'theme') || 'dark'; // Default to dark theme
+            const isLogVisible = localStorage.getItem(settingsStoragePrefix + 'logVisible') !== 'false'; // Default to visible
+
+            if (savedTheme === 'dark') {
+                body.classList.add('dark-theme');
+                themeToggleButton.textContent = '☀️';
+            } else {
+                 body.classList.remove('dark-theme');
+                 themeToggleButton.textContent = '🌙';
+            }
+             // Apply log visibility
+             logAreaWrapper.classList.toggle('hidden', !isLogVisible);
+             toggleLogButton.innerHTML = `<span class="icon">${isLogVisible ? '🔼' : '🔽'}</span> ${isLogVisible ? 'Gizle' : 'Göster'}`;
+
+
+            updateRootRgbColors(); // Update RGB colors after theme is set
+            updateReloadInterval();
+            updateStartDelay();
+            updateTransparencyButton();
+            checkPerformanceWarning();
+            updateResourceEstimate();
+            logMessage("Ayarlar yüklendi.");
+             if (localStorage.getItem(passwordStorageKey) === 'true') {
+                 logMessage("Şifre kilidi aktif (daha önce girilmiş).");
+             }
+        }
+
+        // --- Theme Toggle ---
+         function toggleTheme() {
+             body.classList.toggle('dark-theme');
+             const theme = body.classList.contains('dark-theme') ? 'Karanlık' : 'Aydınlık';
+             themeToggleButton.textContent = body.classList.contains('dark-theme') ? '☀️' : '🌙';
+             logMessage(`Tema: ${theme} Mod Aktif.`);
+             updateRootRgbColors(); // Update colors after theme change
+             saveSettings();
+         }
+
+        // --- UI Updates ---
+        function updateUIState(state = 'idle') {
+            const isStartingOrRunning = (state === 'starting' || state === 'running');
+            startButton.disabled = isStartingOrRunning;
+            stopButton.disabled = !isStartingOrRunning && state !== 'stopping';
+            channelNameInput.disabled = isStartingOrRunning;
+            iframeCountInput.disabled = isStartingOrRunning;
+            startDelayInput.disabled = isStartingOrRunning;
+            reloadIntervalSelect.disabled = isStartingOrRunning;
+            transparencyButton.disabled = isStartingOrRunning;
+
+            statusText.classList.remove('running'); // Remove class first
+            switch (state) {
+                case 'starting':
+                    statusText.textContent = `Başlatılıyor (${createdCount}/${targetCount})...`;
+                    progressContainer.classList.add('visible');
+                    break;
+                case 'running':
+                    statusText.textContent = `Çalışıyor (${currentChannel})`;
+                    statusText.classList.add('running'); // Add class for potential styling
+                     progressContainer.classList.remove('visible');
+                    break;
+                case 'stopping':
+                    statusText.textContent = 'Durduruluyor...';
+                    progressContainer.classList.remove('visible');
+                    break;
+                case 'stopped':
+                    statusText.textContent = 'Durduruldu';
+                    createdCount = 0;
+                    progressBar.style.width = '0%';
+                     progressContainer.classList.remove('visible');
+                    break;
+                case 'idle':
+                default:
+                    statusText.textContent = 'Beklemede';
+                    createdCount = 0;
+                    progressBar.style.width = '0%';
+                     progressContainer.classList.remove('visible');
+                    break;
+            }
+            counterElement.textContent = `(${currentCount})`;
+            // Update counter color based on running state
+            counterElement.classList.toggle('running', isStartingOrRunning);
+        }
+
+        function updateTransparencyButton() {
+             const icon = isTransparent ? '👁️' : '👻';
+             transparencyButton.innerHTML = `<span class="icon">${icon}</span> Saydamlık ${isTransparent ? 'AÇIK' : 'KAPALI'}`;
+             transparencyButton.classList.toggle('active', isTransparent);
+             updateResourceEstimate();
+        }
+
+        function updateReloadInterval() {
+            reloadInterval = parseInt(reloadIntervalSelect.value);
+            if (isRunning && reloadInterval > 0) { logMessage("Yenileme aralığı değişti. Değişiklik bir sonraki başlatmada geçerli olacak.", 'warn'); }
+            else if (isRunning && reloadInterval === 0) { logMessage("Yenileme durduruldu (Asla seçildi).", 'info'); manageIntervals('stop'); }
+        }
+
+        function updateStartDelay() {
+            startDelay = parseInt(startDelayInput.value) || 250;
+            if (startDelay < 50) startDelay = 50;
+            if (startDelay > 5000) startDelay = 5000;
+            startDelayInput.value = startDelay;
+        }
+
+        function checkPerformanceWarning() {
+            const count = parseInt(iframeCountInput.value) || 0;
+            if (count > 20) {
+                performanceWarning.classList.add('visible');
+                if (count > 60) { performanceWarning.innerHTML = `<span class="icon">🔥🔥</span> Çok yüksek sayı! Ciddi yavaşlama/çökme riski!`; }
+                else { performanceWarning.innerHTML = `<span class="icon">⚠️</span> Yüksek sayı performansı etkileyebilir!`; }
+            } else { performanceWarning.classList.remove('visible'); }
+            updateResourceEstimate();
+        }
+
+        function updateResourceEstimate() {
+            const count = parseInt(iframeCountInput.value) || 0;
+            let level = 'Düşük'; let className = 'low';
+            let factor = isTransparent ? 0.5 : 1;
+            if (count * factor > 50) { level = 'ÇOK YÜKSEK!'; className = 'very-high'; }
+            else if (count * factor > 25) { level = 'Yüksek'; className = 'high'; }
+            else if (count * factor > 8) { level = 'Orta'; className = 'medium'; }
+            resourceEstimateElement.textContent = level;
+            resourceEstimateElement.className = className;
+        }
+
+        // --- Log and Password Lock Controls ---
+        function clearLog() { logArea.value = ''; logMessage("İşlem günlüğü temizlendi."); }
+        function resetPasswordLock() { try { localStorage.removeItem(passwordStorageKey); logMessage("Şifre kilidi sıfırlandı."); alert("Şifre kilidi sıfırlandı."); } catch (e) { console.error("Şifre kilidi sıfırlanamadı:", e); logMessage("Şifre kilidi sıfırlanamadı.", 'error'); } }
+        function toggleLog() {
+             const isHidden = logAreaWrapper.classList.toggle('hidden');
+             toggleLogButton.innerHTML = `<span class="icon">${isHidden ? '🔽' : '🔼'}</span> ${isHidden ? 'Göster' : 'Gizle'}`;
+             saveSettings(); // Save the new visibility state
+             // Scroll to bottom only if log becomes visible AND has content
+             if (!isHidden && logArea.value.trim() !== '') {
+                 // Use setTimeout to allow the element to become visible before scrolling
+                 setTimeout(() => { logArea.scrollTop = logArea.scrollHeight; }, 50);
+             }
+        }
+
+
+        // --- Core Functions ---
+
+        function manageIntervals(action) { // 'start', 'stop'
+             iframeIntervals.forEach(item => {
+                 clearInterval(item.id); item.id = null;
+                 if (action === 'start' && reloadInterval > 0 && item.iframe.parentNode && isRunning) {
+                     item.id = setInterval(() => {
+                         if (item.iframe.parentNode && isRunning && !stopRequested) {
+                             item.iframe.classList.add('reloading');
+                             item.iframe.src = item.iframe.src;
+                             setTimeout(() => { if (item.iframe.parentNode) item.iframe.classList.remove('reloading'); }, 600);
+                         } else if (!isRunning || stopRequested) { clearInterval(item.id); item.id = null; }
+                     }, reloadInterval);
+                 }
+             });
+        }
+
+        function createIframe(index) {
+            if (!isRunning || stopRequested) return null;
+            // URL updated to kick.com/channelname (v3.7+)
+            const videoUrl = `https://kick.com/${currentChannel}`;
+            const iframe = document.createElement("iframe");
+            try { iframe.src = videoUrl; }
+            catch (e) { logMessage(`Iframe ${index + 1} src ayarlanamadı: ${e.message}`, 'error'); return null; }
+            iframe.loading = "lazy";
+            iframe.title = `${currentChannel} Yayını ${index + 1}`;
+            iframe.setAttribute('allowfullscreen', '');
+            iframe.setAttribute('allow', 'autoplay; fullscreen');
+            iframe.style.borderColor = '';
+            if (isTransparent) { iframe.classList.add('transparent'); }
+            iframeContainer.appendChild(iframe);
+            currentCount++;
+            logMessage(`Iframe ${index + 1} oluşturuldu: ${currentChannel}`);
+            iframeIntervals.push({ id: null, iframe: iframe });
+            counterElement.textContent = `(${currentCount})`;
+            return iframe;
+        }
+
+        async function startIframes() {
+            // Password check
+            let passwordAlreadyEntered = false;
+            try { passwordAlreadyEntered = localStorage.getItem(passwordStorageKey) === 'true'; }
+            catch (e) { console.error("localStorage erişim hatası:", e); logMessage("Tarayıcı hafızasına erişilemiyor.", 'error'); }
+
+            if (!passwordAlreadyEntered) {
+                const password = prompt("Lütfen Başlatma Şifresini Girin (Kod içinde görülebilir!):");
+                if (password !== correctPassword) { alert("Yanlış şifre!"); logMessage("Yanlış şifre girildi.", 'error'); return; }
+                try { localStorage.setItem(passwordStorageKey, 'true'); logMessage("Şifre doğru ve kaydedildi."); }
+                catch (e) { console.error("Şifre durumu kaydedilemedi:", e); logMessage("Şifre durumu tarayıcı hafızasına kaydedilemedi.", 'warn'); }
+            } else { logMessage("Kaydedilmiş şifre kilidi kullanılıyor."); }
+
+            // --- Input Validation ---
+            const channelName = channelNameInput.value.trim() || channelNameInput.placeholder;
+            const count = parseInt(iframeCountInput.value);
+            const delayMs = parseInt(startDelayInput.value);
+
+            if (!channelName) { alert("Lütfen geçerli bir Kick kanal adı girin."); logMessage("Kanal adı girilmedi.", 'error'); return; }
+            if (isNaN(count) || count <= 0 || count > 200) { alert("Lütfen 1 ile 200 arasında geçerli bir izleyici sayısı girin."); logMessage(`Geçersiz izleyici sayısı: ${iframeCountInput.value}`, 'error'); return; }
+
+            // --- High Count Confirmation ---
+            if (count > 30) {
+                let confirmMsg = `${count} izleyici başlatılacak. Bu, tarayıcıyı/bilgisayarı ${count > 60 ? 'aşırı derecede' : 'ciddi şekilde'} yavaşlatabilir ve izleyicilerin düşme olasılığı yüksektir. Devam edilsin mi?`;
+                if (!confirm(confirmMsg)) { logMessage("Yüksek izleyici sayısı nedeniyle işlem kullanıcı tarafından iptal edildi."); return; }
+                logMessage(`Yüksek izleyici sayısı (${count}) ile devam ediliyor. Performans sorunları beklenmelidir.`, 'warn');
+            }
+
+            if (isRunning) { logMessage("Zaten çalışıyor.", 'warn'); return; }
+
+            stopIframes(true); // Silent cleanup
+
+            // --- Initialize ---
+            currentChannel = channelName;
+            targetCount = count;
+            startDelay = delayMs;
+            isRunning = true;
+            stopRequested = false;
+            createdCount = 0;
+            currentCount = 0;
+            iframeIntervals = [];
+            logMessage(`Başlatılıyor... Kanal: ${currentChannel}, Hedef: ${targetCount}, Gecikme: ${startDelay}ms`);
+            updateReloadInterval();
+            updateUIState('starting');
+            progressBar.style.width = '0%';
+
+            // --- Async Iframe Creation Loop ---
+            try {
+                for (let i = 0; i < targetCount; i++) {
+                    if (stopRequested) { logMessage("Durdurma isteği alındı, iframe oluşturma iptal edildi."); break; }
+                    createdCount = i + 1;
+                    updateUIState('starting');
+                    progressBar.style.width = `${(createdCount / targetCount) * 100}%`;
+
+                    createIframe(i);
+                    await delay(startDelay);
+                }
+
+                if (!stopRequested) {
+                    isRunning = true;
+                    updateUIState('running');
+                    manageIntervals('start'); // Start intervals
+                    logMessage(`Başlatma tamamlandı. ${currentCount} iframe aktif. İzleyicilerin kalıcılığı GARANTİ DEĞİLDİR!`, 'info');
+                    if (count > 30) { logMessage("Performans İpuçları: Daha az izleyici seçin veya Saydamlık Modunu kullanın.", 'warn'); }
+                    saveSettings();
+                } else {
+                    stopIframes(true);
+                    updateUIState('stopped');
+                }
+            } catch (error) {
+                 logMessage(`Başlatma sırasında hata: ${error.message}`, 'error');
+                 console.error("Başlatma hatası:", error);
+                 stopIframes(true);
+                 updateUIState('stopped');
+            }
+        }
+
+        function stopIframes(internalCall = false) {
+             if (!internalCall && !isRunning && !statusText.textContent.startsWith('Başlatılıyor')) { logMessage("Zaten durdurulmuş.", 'info'); return; }
+             if (!internalCall) { logMessage("Durduruluyor..."); updateUIState('stopping'); }
+
+             stopRequested = true;
+             isRunning = false;
+
+             manageIntervals('stop'); // Clear intervals
+
+             iframeContainer.innerHTML = '';
+             const finalCount = currentCount;
+             currentCount = 0;
+             createdCount = 0;
+
+             setTimeout(() => {
+                 updateUIState('stopped');
+                 if (finalCount > 0 || statusText.textContent.startsWith('Başlatılıyor')) {
+                    logMessage(`Durduruldu. ${finalCount} iframe kapatıldı.`);
+                 }
+                 progressBar.style.width = '0%';
+                 progressContainer.classList.remove('visible');
+             }, 50);
+        }
+
+        function toggleTransparency() {
+            if (isRunning) { logMessage("Saydamlık ayarı çalışırken değiştirilemez.", "warn"); return; }
+            isTransparent = !isTransparent;
+            updateTransparencyButton();
+            logMessage(`Saydamlık ${isTransparent ? 'AÇIK' : 'KAPALI'}. ${isTransparent ? 'Performansa küçük katkı sağlar.' : ''}`);
+            saveSettings();
+        }
+
+        // --- Event Listeners ---
+        themeToggleButton.addEventListener('click', toggleTheme);
+        clearLogButton.addEventListener('click', clearLog);
+        resetPasswordLockButton.addEventListener('click', resetPasswordLock);
+        toggleLogButton.addEventListener('click', toggleLog);
+
+        reloadIntervalSelect.addEventListener('change', () => {
+            const previousInterval = reloadInterval;
+            updateReloadInterval();
+            saveSettings();
+            if (isRunning && previousInterval > 0 && reloadInterval === 0) { logMessage("Yenileme 'Asla' olarak ayarlandı, aktif yenilemeler durduruldu.", 'info'); manageIntervals('stop'); }
+            else if (isRunning && reloadInterval > 0) { logMessage("Uyarı: Yenileme aralığı değişti. Durdur/Başlat önerilir.", 'warn'); manageIntervals('start'); }
+        });
+
+        startDelayInput.addEventListener('change', () => { updateStartDelay(); saveSettings(); });
+        channelNameInput.addEventListener('change', saveSettings);
+        iframeCountInput.addEventListener('change', () => { checkPerformanceWarning(); saveSettings(); });
+
+
+        // --- Initial Load ---
+        window.addEventListener('load', () => {
+            loadSettings(); // Load settings first
+            updateUIState('idle'); // Set initial UI state
+            logMessage("Sayfa yüklendi. Kick Bot v3.9"); // Version updated in log
+            logMessage("UYARI: Bu araç Kick kurallarını ihlal edebilir!", 'warn');
+            logMessage("ÖNEMLİ: İzleyicilerin düşmesi normaldir ve engellenemez.", 'warn');
+        });
+
+        // --- Visibility Change Handling (v3.4+ - No longer stops intervals) ---
+        // document.addEventListener("visibilitychange", () => { ... });
+
+    </script>
+</body>
+</html>
